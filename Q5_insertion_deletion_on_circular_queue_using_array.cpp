@@ -1,127 +1,110 @@
-#include<stdio.h>
-#define MAX 5
+#include <stdio.h>
+#include <stdlib.h>
 
-int cqueue_arr[MAX];
-int front = -1;
-int rear = -1;
-
-/*Begin of insert*/
-void insert(int item)
+struct circular_queue
 {
-	if((front == 0 && rear == MAX-1) || (front == rear+1))
-	{
-		printf("Queue Overflow \n");
-		return;
-	}
-	if (front == -1)  /*If queue is empty */
-	{
-		front = 0;
-		rear = 0;
-	}
-	else
-	{
-		if(rear == MAX-1)	/*rear is at last position of queue */
-			rear = 0;
-		else
-			rear = rear+1;
-	}
-	cqueue_arr[rear] = item ;
-}
-/*End of insert*/
+	int size;
+	int f;   // first
+	int r;   // rear
+	int* arr;
+};
 
-/*Begin of del*/
-void del()
+// IS EMPTY
+int isEmpty(struct circular_queue *q){
+    if(q->r==q->f){
+        return 1;
+    }
+    return 0;
+}
+
+// IS FULL
+int isFull(struct circular_queue *q){
+    if ((q->r+1)%q->size==q->f)
+	{
+		return 1;
+	}
+    return 0;
+}
+
+// ENQUEUE 
+void enqueue(struct circular_queue *q, int val)
 {
-	if (front == -1)
-	{
-		printf("Queue Underflow\n");
-		return ;
-	}
-	printf("Element deleted from queue is : %d\n",cqueue_arr[front]);
-	if(front == rear) /* queue has only one element */
-	{
-		front = -1;
-		rear=-1;
-	}
-	else
-	{	
-		if(front == MAX-1)
-			front = 0;
-		else
-			front = front+1;
-	}
+    // printf("inside enqueue\n");
+    if(isFull(q))
+    {
+        printf("Queue is full can't enqueue: %d\n", val);
+    }
+    else
+    {
+        q->r = (q->r+1)%q->size;
+		q->arr[q->r] = val;
+        printf("Enqued element: %d\n", val);
+    }
 }
-/*End of del() */
 
-/*Begin of display*/
-void display()
+// DEQUEUE 
+int dequeue(struct circular_queue *q)
 {
-	int front_pos = front,rear_pos = rear;
-	if(front == -1)
-	{
-		printf("Queue is empty\n");
-		return;
-	}
-	printf("Queue elements :\n");
-	if( front_pos <= rear_pos )
-		while(front_pos <= rear_pos)
-		{
-			printf("%d ",cqueue_arr[front_pos]);
-			front_pos++;
-		}
-	else
-	{
-		while(front_pos <= MAX-1)
-		{
-			printf("%d ",cqueue_arr[front_pos]);
-			front_pos++;
-		}
-		front_pos = 0;
-		while(front_pos <= rear_pos)
-		{
-			printf("%d ",cqueue_arr[front_pos]);
-			front_pos++;
-		}
-	}
-	printf("\n");
+    // printf("inside dequeue\n");
+    int val = -1;
+    if(isEmpty(q))
+    {
+        printf("Queue is empty can't dequeue element: %d\n", q->f+1);
+    }
+    else
+    {
+        q->f = (q->f+1)%q->size;
+		val = q->arr[q->f];
+    }
+    return val;
 }
-/*End of display*/
 
-/*Begin of main*/
+// IS FULL OR EMPTY
+void fullOrEmpty(struct circular_queue &q)
+{
+	// CHECKING FULL OR EMPTY
+    if(isFull(&q)) { printf("Full\n"); }
+    if(isEmpty(&q)) { printf("Empty\n"); }
+}
+
 int main()
 {
-	int choice,item;
-	do
-	{
-		printf("1.Insert\n");
-		printf("2.Delete\n");
-		printf("3.Display\n");
-		printf("4.Quit\n");
+	struct  circular_queue q;
+	q.size = 4;
+	q.f = q.r = 0;
+	q.arr = (int*)malloc(q.size*sizeof(int)); q;
+	q.size = 4;
+	q.f = q.r = 0;
+	q.arr = (int*)malloc(q.size*sizeof(int));
 
-		printf("Enter your choice : ");
-		scanf("%d",&choice);
+	printf("Size of queue is: %d\n", sizeof(q.arr));
+    
+    fullOrEmpty(q);
+    
+    printf("eneueuing.... \n");
+    
+    enqueue(&q, 12);
+    enqueue(&q, 14);
+    enqueue(&q, 16);
+    
+    fullOrEmpty(q);
 
-		switch(choice)
-		{
-			case 1 :
-				printf("Input the element for insertion in queue : ");
-				scanf("%d", &item);
+    printf("value of element is: %u\n", q.arr[1]);
+    printf("value of element is: %u\n", q.arr[2]);
+    printf("value of element is: %u\n", q.arr[3]);
+    
+    printf("Dequeuing... %d\n", dequeue(&q));
+    printf("Dequeuing... %d\n", dequeue(&q));
+    printf("Dequeuing... %d\n", dequeue(&q));
 
-				insert(item);
-				break;
-			case 2 :
-				del();
-				break;
-			case 3:
-				display();
-				break;
-			case 4:
-				break;
-				default:
-				printf("Wrong choice\n");
-		}
-	}while(choice!=4);
-	
-	return 0;
+    fullOrEmpty(q);
+
+    enqueue(&q, 12);
+    enqueue(&q, 14);
+
+    printf("TASK COMPLETE");
+    return 0;
+
+
+
 }
-/*End of main*/

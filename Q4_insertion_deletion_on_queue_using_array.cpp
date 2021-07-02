@@ -1,84 +1,97 @@
-#include <stdio.h> 
+#include <stdio.h>
+#include <stdlib.h>
 
-#define MAX 50
- 
-void insert();
-void delete();
-void display();
-int queue_array[MAX];
-int rear = - 1;
-int front = - 1;
-main()
+struct queue
 {
-    int choice;
-    while (1)
-    {
-        printf("1.Insert element to queue \n");
-        printf("2.Delete element from queue \n");
-        printf("3.Display all elements of queue \n");
-        printf("4.Quit \n");
-        printf("Enter your choice : ");
-        scanf("%d", &choice);
-        switch (choice)
-        {
-            case 1:
-            insert();
-            break;
-            case 2:
-            delete();
-            break;
-            case 3:
-            display();
-            break;
-            case 4:
-            exit(1);
-            default:
-            printf("Wrong choice \n");
-        } /* End of switch */
-    } /* End of while */
-} /* End of main() */
- 
-void insert()
-{
-    int add_item;
-    if (rear == MAX - 1)
-    printf("Queue Overflow \n");
-    else
-    {
-        if (front == - 1)
-        /*If queue is initially empty */
-        front = 0;
-        printf("Inset the element in queue : ");
-        scanf("%d", &add_item);
-        rear = rear + 1;
-        queue_array[rear] = add_item;
+	int size;
+	int f;   // first
+	int r;   // rear
+	int* arr;
+
+	
+};
+
+int isEmpty(struct queue *q){
+    if(q->r==q->f){
+        return 1;
     }
-} /* End of insert() */
- 
-void delete()
+    return 0;
+}
+
+int isFull(struct queue *q){
+    if(q->r==q->size-1){
+        return 1;
+    }
+    return 0;
+}
+
+void enqueue(struct queue *q, int val)
 {
-    if (front == - 1 || front > rear)
+    // printf("inside enqueue\n");
+    if(isFull(q))
     {
-        printf("Queue Underflow \n");
-        return ;
+        printf("Queue is full can't enqueue: %d\n", val);
     }
     else
     {
-        printf("Element deleted from queue is : %d\n", queue_array[front]);
-        front = front + 1;
-    }
-} /* End of delete() */
- 
-void display()
-{
-    int i;
-    if (front == - 1)
-        printf("Queue is empty \n");
-    else
-    {
-        printf("Queue is : \n");
-        for (i = front; i <= rear; i++)
-            printf("%d ", queue_array[i]);
-        printf("\n");
+        q->r++;
+        q->arr[q->r] = val;
+        printf("Enqued element: %d\n", val);
     }
 }
+
+int dequeue(struct queue *q)
+{
+    // printf("inside dequeue\n");
+    int a = -1;
+    if(isEmpty(q))
+    {
+        printf("Queue is empty can't dequeue element: %d\n", q->f+1);
+    }
+    else
+    {
+        q->f++;
+        a = q->arr[q->f];
+    }
+    return a;
+}
+
+int main() {
+    
+    struct queue q;
+	q.size = 4;
+	q.f = q.r = 0;
+	q.arr = (int*)malloc(q.size*sizeof(int));
+    
+    printf("Size of queue is: %d\n", sizeof(q.arr));
+    
+    if(isFull(&q)) { printf("Full\n"); }
+    if(isEmpty(&q)) { printf("Empty\n"); }
+    
+    printf("eneueuing.... \n");
+    
+    
+    enqueue(&q, 12);
+    enqueue(&q, 14);
+    enqueue(&q, 16);
+
+    
+    if(isFull(&q)) { printf("Full\n"); }
+    if(isEmpty(&q)) { printf("Empty\n"); }
+
+    printf("value of element is: %u\n", q.arr[1]);
+    printf("value of element is: %u\n", q.arr[2]);
+    printf("value of element is: %u\n", q.arr[3]);
+    
+    printf("Dequeuing... %d\n", dequeue(&q));
+    printf("Dequeuing... %d\n", dequeue(&q));
+    printf("Dequeuing... %d\n", dequeue(&q));
+    
+    enqueue(&q, 12);
+    enqueue(&q, 14);
+    if(isFull(&q)) { printf("Full\n"); }
+    if(isEmpty(&q)) { printf("Empty\n"); }
+    
+    return 0;
+}
+
